@@ -13,7 +13,7 @@ const router = express.Router();
 
 router.post("/", protect, createCandidate);
 router.get("/", protect, getMyCandidates);
-router.get("/all", getAllCandidates);
+router.get("/all", protect, getAllCandidates);
 router.get("/:id", protect, getSingleCandidate);
 router.patch("/:id", protect, updateCandidate);
 router.delete("/:id", protect, deleteCandidate);
