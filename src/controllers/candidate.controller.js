@@ -135,20 +135,25 @@ export const getMyCandidates = async (req, res) => {
 ========================================
 GET SINGLE CANDIDATE
 ========================================
-*/
-export const getSingleCandidate = async (req, res) => {
+*/ export const getSingleCandidate = async (req, res) => {
   try {
-    // Use aggregation to fetch candidate with interviewer info
+    const { id } = req.params;
+
+    // ✅ Check if valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid candidate ID" });
+    }
+
     const candidate = await Candidate.aggregate([
       {
         $match: {
-          _id: new mongoose.Types.ObjectId(req.params.id),
+          _id: new mongoose.Types.ObjectId(id),
           interviewer: new mongoose.Types.ObjectId(req.user._id),
         },
       },
       {
         $lookup: {
-          from: "interviewers", // Mongo collection name
+          from: "interviewers",
           localField: "interviewer",
           foreignField: "_id",
           as: "interviewerInfo",
@@ -179,6 +184,7 @@ export const getSingleCandidate = async (req, res) => {
 
     res.status(200).json({ success: true, data: candidate[0] });
   } catch (error) {
+    console.log("Get Single Error:", error.message);
     res.status(500).json({ message: error.message });
   }
 };
