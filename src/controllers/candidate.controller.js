@@ -1,4 +1,4 @@
-import { Candidate } from "../models/candidate.models.js";
+import { Candidate } from "../models/candidate.model.js";
 import mongoose from "mongoose";
 
 /*
