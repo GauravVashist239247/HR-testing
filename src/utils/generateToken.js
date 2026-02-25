@@ -9,7 +9,7 @@ export const generateToken = (res, interviewer) => {
 
   res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: "none",
     sameSite: "strict",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
