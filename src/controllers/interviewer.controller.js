@@ -1,5 +1,5 @@
 import { Interviewer } from "../models/interviewer.model.js";
-import { generateToken } from "../utils/generateToken.js";
+// import { generateToken } from "../utils/generateToken.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -19,9 +19,23 @@ export const registerInterviewer = async (req, res) => {
       password,
     });
 
-    generateToken(res, interviewer);
+    // generateToken(res, interviewer);
+
+    const token = jwt.sign(
+      { id: interviewer._id, role: interviewer.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" },
+    );
+
+    // res.cookie("token", token, {
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: "none",
+    //   maxAge: 7 * 24 * 60 * 60 * 1000,
+    // });
 
     res.status(201).json({
+      token,
       success: true,
       message: "Registered successfully",
       data: {
@@ -62,13 +76,14 @@ export const loginInterviewer = async (req, res) => {
 
     res
       .status(200)
-      .cookie("token", token, {
-        httpOnly: true, // prevents JavaScript access
-        secure: true, // set to true if using HTTPS
-        sameSite: "none", // or 'Strict' or 'None' for cross-site
-        maxAge: 24 * 60 * 60 * 1000, // 1 day
-      })
+      // .cookie("token", token, {
+      //   httpOnly: true, // prevents JavaScript access
+      //   secure: true, // set to true if using HTTPS
+      //   sameSite: "none", // or 'Strict' or 'None' for cross-site
+      //   maxAge: 24 * 60 * 60 * 1000, // 1 day
+      // })
       .json({
+        token,
         success: true,
         message: "Login successful",
         data: {
@@ -85,17 +100,11 @@ export const loginInterviewer = async (req, res) => {
 
 // LOGOUT
 export const logoutInterviewer = (req, res) => {
-  res.cookie("token", "", {
-    httpOnly: true,
-    expires: new Date(0),
-  });
-
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
-    message: "Logged out successfully",
+    message: "Logged out successfully. Please delete token from client.",
   });
 };
-
 // GET PROFILE
 export const getProfile = async (req, res) => {
   res.status(200).json({
